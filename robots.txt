@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jameschrisa.github.io/unit-economics/sitemap.xml

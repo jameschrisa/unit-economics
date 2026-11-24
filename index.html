@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketing Unit Economics</title>
+<meta name="description" content="Interactive unit economics calculator for marketers. See how revenue becomes profit per customer after COGS, selling costs, CAC, retention and AI costs, for DTC, B2C and B2B.">
+<meta name="author" content="James">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://jameschrisa.github.io/unit-economics/">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Marketing Unit Economics">
+<meta property="og:title" content="Marketing Unit Economics">
+<meta property="og:description" content="Interactive unit economics calculator for marketers. See how revenue becomes profit per customer after COGS, selling costs, CAC, retention and AI costs, for DTC, B2C and B2B.">
+<meta property="og:url" content="https://jameschrisa.github.io/unit-economics/">
+<meta property="og:image" content="https://jameschrisa.github.io/unit-economics/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A waterfall chart stepping down from revenue to profit per customer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marketing Unit Economics">
+<meta name="twitter:description" content="Interactive unit economics calculator for marketers. See how revenue becomes profit per customer after COGS, selling costs, CAC, retention and AI costs, for DTC, B2C and B2B.">
+<meta name="twitter:image" content="https://jameschrisa.github.io/unit-economics/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Marketing Unit Economics","url":"https://jameschrisa.github.io/unit-economics/","description":"Interactive unit economics calculator for marketers. See how revenue becomes profit per customer after COGS, selling costs, CAC, retention and AI costs, for DTC, B2C and B2B.","applicationCategory":"BusinessApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a finance-desk explainer, plain words, numbers first, nothing decorative
+   IDEA: the P&L of one customer across their whole life, read top to bottom like a statement
+   PICTURE: a live horizontal waterfall from first order and repeat revenue down to profit after winning and keeping them
+   COLOUR and TYPE: white page, black and greys only; green or red appears only on the profit result; Outfit + Inter
+   LAYOUT: finding and four figures on top, waterfall left, collapsible inputs right, square corners throughout */
+:root{color-scheme:light;--bg:#fff;--ink:#000;--mute:#666;--line:#e0e0e0;--panel:#f5f5f5;
+--rev:#000;--rep:#555;--sub:#222;--c1:#c8c8c8;--c2:#9e9e9e;--c3:#787878;--ai:repeating-linear-gradient(135deg,#6a6a6a 0 3px,#b5b5b5 3px 6px);--pos:#1a7f37;--neg:#c62828}
+*{box-sizing:border-box;min-width:0;border-radius:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Outfit,Inter,sans-serif;font-weight:600;margin:0;line-height:1.05;text-wrap:balance}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.top{border-bottom:1px solid var(--line)}
+.pills{display:flex;flex-wrap:wrap;gap:0;margin-bottom:10px}
+.pills button{font:500 15px Inter,sans-serif;min-height:44px;padding:0 18px;border:1px solid var(--ink);margin-right:-1px;background:var(--bg);color:var(--ink);cursor:pointer;text-align:center}
+.pills button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.pills small{display:block;font-weight:400;font-size:12px;opacity:.75}
+.pills.pat button{min-height:36px;font-size:14px;padding:0 14px;border-color:var(--mute)}
+.pills.pat button[aria-pressed=true]{background:var(--mute);border-color:var(--mute)}
+.pills.pat button:disabled{color:#aaa;border-color:#ccc;cursor:default}
+#modes{margin-bottom:12px}
+h1{font-size:clamp(30px,4.2vw,48px);max-width:24ch}
+h1 .pos{color:var(--pos)}h1 .neg{color:var(--neg)}
+#lever{margin:12px 0 0;font-size:17px;max-width:64ch;color:#333}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:28px;border-top:1px solid var(--ink)}
+.kpi{padding:14px 16px 0 0}
+.kpi b{display:block;font:600 clamp(28px,3.6vw,40px)/1 Outfit,sans-serif;white-space:nowrap}
+.kpi b.pos{color:var(--pos)}.kpi b.neg{color:var(--neg)}
+.kpi span{font-size:14px;display:block;margin-top:6px;color:var(--mute)}
+.main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.sheet h2,.ctl h2{font-size:22px}.note{color:var(--mute);font-size:14px;margin:4px 0 18px}
+.wf{display:grid;gap:2px}
+.row{display:grid;grid-template-columns:minmax(0,11.5em) minmax(0,1fr) 6.2em;gap:10px;align-items:center;min-height:32px;padding:2px 6px;cursor:default;outline:none}
+.row:hover,.row:focus-visible,.row.on{background:var(--panel)}
+.row:focus-visible{box-shadow:inset 0 0 0 1px var(--ink)}
+.row .l{font-size:14px;line-height:1.2}.row.t .l,.row.t .v{font-weight:600}
+.row .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+.row .v.pos{color:var(--pos)}.row .v.neg{color:var(--neg)}
+.row.gap{margin-top:10px}
+.track{position:relative;height:18px}
+.bar{position:absolute;top:0;bottom:0;transition:left .55s cubic-bezier(.2,.7,.2,1),width .55s cubic-bezier(.2,.7,.2,1),background .3s}
+.zero{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--ink)}
+.why{margin-top:18px;border:1px solid var(--line);border-left:2px solid var(--ink);padding:16px 18px;min-height:120px}
+.why h3{font-size:18px;margin-bottom:6px}.why p{margin:0;font-size:15px;max-width:62ch}
+.why .f{color:var(--mute);font-size:14px;margin-top:8px}
+.ctlhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.link{font:500 14px Inter,sans-serif;background:none;border:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px;padding:0 4px}
+details{border-top:1px solid var(--line)}details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;display:grid;grid-template-columns:10px minmax(0,1fr) auto 16px;gap:10px;align-items:center;min-height:52px;cursor:pointer;padding:4px 2px}
+summary::-webkit-details-marker{display:none}
+summary i{width:10px;height:10px}
+summary span{font:600 16px Outfit,sans-serif}
+summary b{font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--mute)}
+summary::after{content:"";width:7px;height:7px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(45deg);transition:transform .2s;justify-self:center;margin-top:-4px}
+details[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+summary:focus-visible{outline:1px solid var(--ink);outline-offset:2px}
+.body{padding:0 2px 12px}.hint{font-size:13px;color:var(--mute);margin:0 0 4px}
+.s{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 10px;padding:5px 0}
+.s .lab{display:flex;align-items:center;gap:6px;font-size:14px}
+.s output{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tip{flex:none;width:18px;height:18px;border:1px solid var(--mute);background:var(--bg);color:var(--mute);font:600 11px/1 Inter,sans-serif;cursor:help;padding:0;position:relative}
+.tip::before{content:"";position:absolute;inset:-13px}
+.tip:hover,.tip:focus-visible{background:var(--ink);color:var(--bg);border-color:var(--ink);outline:none}
+.tipbox{display:none;position:absolute;left:0;right:0;top:calc(100% - 4px);z-index:5;background:var(--ink);color:var(--bg);font-size:13px;line-height:1.45;padding:10px 12px}
+.s:has(.tip:hover) .tipbox,.s:has(.tip:focus-visible) .tipbox{display:block}
+input[type=range]{grid-column:1/-1;width:100%;height:28px;margin:2px 0 0;cursor:pointer;-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(var(--ink),var(--ink)) 0/var(--p,50%) 100% no-repeat,#d0d0d0}
+input[type=range]::-moz-range-track{height:2px;background:#d0d0d0}
+input[type=range]::-moz-range-progress{height:2px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-6px;background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink);border:2px solid var(--bg);border-radius:0;box-shadow:0 0 0 1px var(--ink)}
+input[type=range]:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.reset{font:500 15px Inter,sans-serif;min-height:44px;padding:0 18px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer;margin-top:16px}
+.reset:hover{background:var(--ink);color:var(--bg)}
+.reset:focus-visible,.pills button:focus-visible,.link:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.patrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:24px}
+.patrow .pills{margin:0}.patlab{font-size:14px;font-weight:600}.patlab em{font-style:normal;font-weight:400;color:var(--mute)}
+.pathint{font-size:13px;color:var(--mute)}
+.recs{margin-top:36px;border-top:1px solid var(--ink);padding-top:20px}
+.recs ol{margin:0;padding:0;list-style:none;counter-reset:r}
+.recs li{counter-increment:r;display:grid;grid-template-columns:2em minmax(0,1fr);padding:12px 0;border-bottom:1px solid var(--line)}
+.recs li::before{content:counter(r);font:600 15px Outfit,sans-serif;grid-row:span 2}
+.recs li b{font-weight:600;font-size:16px}.recs li span{font-size:15px;color:#333;max-width:62ch}
+.models{margin-top:18px}.models summary{grid-template-columns:minmax(0,1fr) auto 16px}.models .body p,.models li{font-size:14px;color:#333}.models ul{padding-left:1.2em;margin:6px 0}.models li{margin:4px 0}
+.models p{margin:0 0 8px;max-width:64ch}
+.foot{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.kpi b{font-size:30px}.row{grid-template-columns:minmax(0,8.5em) minmax(0,1fr) 5em;gap:6px;padding:2px}.row .l,.row .v{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.bar,summary::after{transition:none}}
+</style>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+  <div class="pills" role="group" aria-label="Business model" id="modes"></div>
+  <div class="patrow"><span class="patlab">Repeat customers <em>optional</em></span><div class="pills pat" role="group" aria-label="Repeat customers" id="pats"></div><span class="pathint" id="pathint"></span></div>
+  <h1 id="finding">Working out what one customer is worth</h1>
+  <p id="lever"></p>
+  <div class="kpis">
+    <div class="kpi"><b id="kCM">–</b><span id="kCMl"></span></div>
+    <div class="kpi"><b id="kLC">–</b><span>Lifetime value to total CAC. Healthy is 3:1 or better</span></div>
+    <div class="kpi"><b id="kPB">–</b><span id="kPBl"></span></div>
+    <div class="kpi"><b id="kAI">–</b><span id="kAIl"></span></div>
+  </div>
+</div></header>
+
+<main class="band"><div class="wrap main">
+  <section class="sheet" aria-labelledby="wfh">
+    <h2 id="wfh">One customer, first order to last</h2>
+    <p class="note" id="scope"></p>
+    <div class="wf" id="wf"></div>
+    <div class="why" id="why" aria-live="polite"><h3></h3><p></p><p class="f"></p></div>
+    <div class="recs">
+      <h2>What to do next</h2>
+      <p class="note">Based on the numbers above. Benchmarks are common rules of thumb, not targets for your business.</p>
+      <ol id="recs"></ol>
+      <details class="models"><summary><span>Which business models this covers</span><b></b></summary><div class="body">
+        <p>Three models, each as a one-time sale, repeat purchases or a subscription: DTC from your own store, B2C through marketplaces and retailers, and B2B as purchase orders or SaaS contracts. That is nine combinations.</p>
+        <p>Close relatives you can model with the same inputs:</p>
+        <ul>
+          <li><b>Mobile or web app with in-app purchases.</b> DTC with subscription on. Put the app store's 15 to 30% cut in platform fees.</li>
+          <li><b>Marketplace operator.</b> B2C, with average order value set to your take per transaction, not the buyer's full basket.</li>
+          <li><b>Agency or professional services.</b> B2B with repeat customers off for project work, or repeat purchase on for retainers.</li>
+          <li><b>Wholesale and B2B2C.</b> B2B with repeat purchase on. Put distributor margin in partner fees.</li>
+          <li><b>Usage-based software.</b> B2B subscription, with contract value set to average annual usage revenue.</li>
+        </ul>
+        <p>Not covered: fixed overhead such as rent and G&amp;A salaries, taxes, and the time value of money.</p>
+      </div></details>
+    </div>
+  </section>
+  <section class="ctl" aria-labelledby="ctlh">
+    <div class="ctlhead"><h2 id="ctlh">Change the inputs</h2><button class="link" id="toggleAll" type="button">Expand all</button></div>
+    <form id="form"></form>
+    <button class="reset" id="reset" type="button">Reset to sample numbers</button>
+  </section>
+</div></main>
+<footer class="band foot"><div class="wrap">Sample numbers are illustrative, not benchmarks for any company. Every figure is per customer over their expected lifetime, worked out from the retention rate. Your inputs are kept in this browser only.</div></footer>
+
+<script>
+{
+const MODES={dtc:['DTC','Own store'],b2c:['B2C','Marketplace and retail'],b2b:['B2B','Business buyers']};
+const PATS={repeat:'Repeat purchase',sub:'Subscription'};
+const AIK=(a,b,c,d,e)=>({aiTokAcq:['Tokens used per new customer','tk',0,a[1],a[2],a[0]],aiMedia:['AI images and video per new customer','$',0,b[1],b[2],b[0]],aiSeats:['AI tool seats per new customer','$',0,c[1],c[2],c[0]],aiTokOrd:[d[3]||'Tokens per order after the sale','tk',0,d[1],d[2],d[0]],aiPrice:['Blended price per million tokens','pm',.1,30,.1,e]});
+// [label, unit, min, max, step, default]
+const CONF={
+ 'dtc-repeat':{who:'customer',u:'orders',ru:'repeat orders',scope:'A brand selling on its own site.',
+  k:{price:['Average order value','$',15,300,1,68],disc1:['Welcome offer on first order','%',0,50,1,20],disc:['Discount on repeat orders','%',0,40,1,5],
+   ret:['Chance a customer orders again','%',0,95,1,58],freq:['Orders per year while active','f',.5,12,.5,2.5],
+   cogs:['Product cost (COGS)','%',5,80,1,30],ful:['Pick, pack and ship per order','$',0,40,.5,11],procP:['Card processing rate','%',0,5,.1,2.9],procF:['Fee per transaction','$',0,1,.05,.3],
+   chan:['Store platform and app fees','%',0,30,.5,2],rfd:['Returns and chargebacks','%',0,30,1,8],comm:['Affiliate and creator commission','%',0,30,1,4],
+   media:['Paid media','$',0,200,1,38],creative:['Creative and content','$',0,60,1,9],tools:['Martech and software','$',0,30,.5,4],people:['Team and agency time','$',0,60,1,7],
+   crm:['Email, SMS and retargeting per repeat order','$',0,15,.25,1.5],loyal:['Loyalty points and win-back offers','%',0,20,.5,3],
+   ...AIK([200,2000,10],[1.5,20,.25],[2,20,.25],[15,500,5],5)}},
+ 'dtc-sub':{who:'subscriber',u:'boxes',ru:'repeat boxes',scope:'A brand shipping a monthly box from its own site. Each billing cycle is one order.',
+  k:{price:['Price per box','$',10,200,1,42],disc1:['First-box offer','%',0,80,1,30],disc:['Subscribe-and-save discount','%',0,40,1,10],
+   ret:['Monthly retention (1 − churn)','%',50,97,1,90],freq:['Billing cycles per year','f',1,52,1,12],
+   cogs:['Product cost (COGS)','%',5,80,1,32],ful:['Pick, pack and ship per box','$',0,30,.5,8],procP:['Card processing rate','%',0,5,.1,2.9],procF:['Fee per transaction','$',0,1,.05,.3],
+   chan:['Subscription app and platform fees','%',0,30,.5,3],rfd:['Refunds and failed payments','%',0,20,.5,3],comm:['Affiliate and creator commission','%',0,30,1,2],
+   media:['Paid media','$',0,200,1,55],creative:['Creative and content','$',0,60,1,12],tools:['Martech and software','$',0,30,.5,6],people:['Team and agency time','$',0,60,1,8],
+   crm:['Lifecycle email and SMS per cycle','$',0,5,.05,.75],loyal:['Cancel-save offers and perks','%',0,20,.5,2],
+   ...AIK([250,2000,10],[2,20,.25],[2,20,.25],[10,500,5],5)}},
+ 'b2c-repeat':{who:'customer',u:'purchases',ru:'repeat purchases',scope:'A consumer brand selling through Amazon, Walmart or retailers.',
+  k:{price:['Unit price','$',5,150,1,34],disc1:['Launch coupon on first purchase','%',0,50,1,10],disc:['Trade promos on repeat purchases','%',0,40,1,6],
+   ret:['Chance a customer buys again','%',0,95,1,65],freq:['Purchases per year while active','f',.5,12,.5,3],
+   cogs:['Product cost (COGS)','%',5,80,1,35],ful:['Marketplace fulfillment per unit','$',0,20,.25,5.5],procP:['Payment processing rate','%',0,5,.1,0],procF:['Fee per transaction','$',0,1,.05,0],
+   chan:['Referral fee or retailer margin','%',0,50,1,15],rfd:['Returns and damages','%',0,30,1,5],comm:['Broker and distributor fees','%',0,20,1,3],
+   media:['Sponsored ads','$',0,80,.5,12],creative:['Listings, photos and content','$',0,30,.5,3],tools:['Marketplace software','$',0,15,.5,1.5],people:['Team and agency time','$',0,30,.5,3],
+   crm:['Retargeting ads per repeat purchase','$',0,5,.05,.5],loyal:['Repeat-buyer coupons','%',0,20,.5,2],
+   ...AIK([100,2000,10],[.75,20,.25],[1,20,.25],[5,500,5],5)}},
+ 'b2c-sub':{who:'subscriber',u:'deliveries',ru:'repeat deliveries',scope:'A consumer brand on marketplace auto-replenish programs such as Subscribe and Save. Each delivery is one order.',
+  k:{price:['Unit price','$',5,150,1,28],disc1:['First delivery coupon','%',0,50,1,15],disc:['Subscribe-and-save discount','%',0,30,1,10],
+   ret:['Retention per delivery (1 − churn)','%',50,97,1,85],freq:['Deliveries per year','f',1,26,1,6],
+   cogs:['Product cost (COGS)','%',5,80,1,35],ful:['Marketplace fulfillment per unit','$',0,20,.25,5],procP:['Payment processing rate','%',0,5,.1,0],procF:['Fee per transaction','$',0,1,.05,0],
+   chan:['Referral fee or retailer margin','%',0,50,1,15],rfd:['Returns and damages','%',0,30,1,3],comm:['Broker and distributor fees','%',0,20,1,2],
+   media:['Sponsored ads','$',0,80,.5,14],creative:['Listings, photos and content','$',0,30,.5,3],tools:['Marketplace software','$',0,15,.5,1.5],people:['Team and agency time','$',0,30,.5,3],
+   crm:['Retargeting ads per delivery','$',0,3,.05,.4],loyal:['Program funding and perks','%',0,20,.5,1],
+   ...AIK([120,2000,10],[.75,20,.25],[1,20,.25],[5,500,5],5)}},
+ 'b2b-repeat':{who:'account',u:'orders',ru:'reorders',scope:'A business selling products or services to other businesses on purchase orders.',
+  lbl:{comm:'Sales commissions',crm:'Account management',loyal:'Rebates',ful:'Shipping and handling',chan:'Partner fees'},
+  k:{price:['Average purchase order','$',500,100000,250,8000],disc1:['New-account discount','%',0,40,1,10],disc:['Volume discount on reorders','%',0,30,1,5],
+   ret:['Chance an account orders again','%',0,95,1,70],freq:['Orders per year while active','f',.5,24,.5,4],
+   cogs:['Product or delivery cost','%',5,85,1,45],ful:['Shipping and handling per order','$',0,3000,25,150],procP:['Invoice and payment fees','%',0,4,.1,1],procF:['Fixed fee per invoice','$',0,100,5,0],
+   chan:['Distributor and partner fees','%',0,40,1,0],rfd:['Credits and returns','%',0,15,.5,2],comm:['Sales commissions','%',0,25,.5,5],
+   media:['Paid media and events','$',0,20000,100,1500],creative:['Content and ABM','$',0,10000,100,800],tools:['Sales and marketing stack','$',0,5000,50,600],people:['SDR and AE time','$',0,40000,250,6000],
+   crm:['Account management per reorder','$',0,3000,25,200],loyal:['Rebates and volume incentives','%',0,15,.5,2],
+   ...AIK([1500,20000,100],[25,2000,5],[200,5000,25],[300,10000,50],5)}},
+ 'b2b-sub':{who:'account',u:'contract years',ru:'renewals',scope:'A software company selling annual contracts. Each renewal year is one order. Onboarding is paid once.',fulFirst:1,
+  lbl:{first:'First-year contract',repeat:'Renewal revenue',cogs:'Hosting and support',ful:'Onboarding',chan:'Reseller fees',rfd:'Credits and refunds',comm:'Sales commissions',crm:'Account management',loyal:'Renewal incentives',aiOrd:'AI per contract year'},
+  k:{price:['Annual contract value','$',2000,150000,500,24000],disc1:['First-year discount','%',0,50,1,15],disc:['Renewal discount','%',0,30,1,5],
+   ret:['Annual renewal rate','%',30,97,1,78],freq:['Contracts per year','f',1,1,1,1],
+   cogs:['Hosting and support','%',5,60,1,18],ful:['Onboarding and implementation (once)','$',0,30000,250,4000],procP:['Invoice and payment fees','%',0,4,.1,.8],procF:['Fixed fee per invoice','$',0,100,5,0],
+   chan:['Reseller and partner fees','%',0,40,1,0],rfd:['Credits and refunds','%',0,15,.5,2],comm:['Sales commissions','%',0,25,.5,10],
+   media:['Paid media and events','$',0,30000,250,6000],creative:['Content and ABM','$',0,15000,250,2500],tools:['Sales and marketing stack','$',0,10000,250,2000],people:['SDR and AE time','$',0,60000,500,16000],
+   crm:['Account management per renewal year','$',0,20000,250,2500],loyal:['Renewal incentives','%',0,20,.5,3],
+   ...AIK([3000,20000,100],[50,2000,10],[400,5000,25],[2000,20000,100,'Tokens per account per year'],5)}}
+};
+const GROUPS=[['rev','Revenue',['price','disc1','disc'],'var(--rev)'],['keepin','Retention',['ret','freq'],'var(--rep)',1],['cogs','Cost of goods',['cogs'],'var(--c1)'],
+ ['sell','Cost to sell and deliver',['ful','procP','procF','chan','rfd','comm'],'var(--c1)'],['win','Cost to win the customer (CAC)',['media','creative','tools','people'],'var(--c2)'],
+ ['keep','Cost to keep the customer',['crm','loyal'],'var(--c3)',1],['ai','AI costs',['aiTokAcq','aiMedia','aiSeats','aiTokOrd','aiPrice'],'var(--ai)']];
+const DEF={
+ first:['First order','The first purchase, at full list price. Discounts come off further down.','price'],
+ repeat:['Repeat revenue','Everything returning customers pay after the first order. The retention rate decides how big this gets: at 90% a customer averages 10 orders, at 50% just 2.','price × (lifetime orders − 1)'],
+ gross:['Gross lifetime revenue','First order plus repeat orders, before any discount.','first order + repeat revenue'],
+ disc:['Discounts','The first-order offer plus any standing discount on repeat orders. It comes off the top, so the percentage costs below are charged on a smaller base.','price × first-order % + repeat revenue × repeat %'],
+ net:['Net revenue','What you actually collect over the customer’s life. Most percentage costs below are taken from this line.','gross − discounts'],
+ cogs:['Cost of goods sold','What it costs to make or serve what you sold. For software that means hosting and support.','net × COGS %'],
+ ful:['Fulfillment','The cost of getting it to the customer, charged on every order. For B2B software it is the one-time onboarding.','cost per order × lifetime orders'],
+ proc:['Payment processing','Card and payment fees. A percentage plus a flat fee per transaction, which hurts small orders most.','net × rate + flat fee × orders'],
+ chan:['Channel fees','What the platform, marketplace or reseller keeps for giving you access to buyers.','net × fee %'],
+ rfd:['Returns and refunds','Revenue that comes back out after the sale.','net × return %'],
+ comm:['Commissions','Pay that scales with each sale, whether to affiliates, brokers or your own sales reps.','net × commission %'],
+ cm:['Contribution margin','What one customer leaves behind after every cost that rises with each sale, before any marketing. This is the pool that has to pay for winning and keeping them.','net − all variable costs'],
+ media:['Paid media','Ad spend divided by the number of new customers it brought in.','media budget ÷ new customers'],
+ creative:['Creative and content','Production cost for the ads, pages and assets that drive acquisition, spread across new customers.','creative budget ÷ new customers'],
+ tools:['Marketing tools','Software subscriptions are a fixed cost. Here they are spread across the customers acquired in the period.','tool spend ÷ new customers'],
+ people:['People','Salaries and agency fees for the team that finds and closes customers. Usually the biggest CAC line in B2B.','people cost ÷ new customers'],
+ crm:['Retention marketing','What you spend to bring a customer back for each repeat order. CAC is paid once; this is paid every cycle.','cost per repeat order × repeat orders'],
+ loyal:['Loyalty and win-back','Points, perks, cancel-save offers, rebates and renewal incentives, charged as a share of repeat revenue.','repeat net revenue × %'],
+ aiAcq:['AI to win the customer','Tokens for ad copy, testing, research and personalized outreach, plus generated images and video and AI tool seats, all per new customer. Counted as part of total CAC.','tokens ÷ 1M × price + media + seats'],
+ aiOrd:['AI per order','Tokens spent on each order after the sale: personalized emails, recommendations and support chat.','tokens per order ÷ 1M × price × lifetime orders'],
+ profit:['Profit per customer','Contribution margin minus the cost to win the customer, the cost to keep them and AI costs. If this is negative, every new customer makes the business poorer.','contribution margin − CAC − retention − AI']
+};
+const TIPS={
+ price:'What the customer pays for one order, before any discount.',
+ disc1:'The discount you give to win the first order, like a welcome code or a first-box offer. It applies once.',
+ disc:'The standing discount on every order after the first, such as subscribe-and-save pricing or promo codes.',
+ ret:'The share of customers who buy again after each order. The rest have churned. At 90%, one in ten leaves each cycle.',
+ freq:'How often an active customer orders. It does not change lifetime profit, only how fast you earn back CAC.',
+ cogs:'What it costs to make or source what you sold, as a share of the money you collect.',
+ ful:'The cost to store, pack and ship each order.',
+ procP:'The percentage the payment company keeps from every payment.',
+ procF:'A flat fee charged on every payment, whatever its size.',
+ chan:'What the store platform, marketplace, app or reseller keeps as a share of revenue.',
+ rfd:'Revenue lost to returns, refunds, chargebacks or failed payments.',
+ comm:'The share of revenue paid to whoever drove the sale: affiliates, creators, brokers or your own sales reps.',
+ media:'Your ad spend divided by the number of new customers it brought in.',
+ creative:'The cost of making ads, landing pages and content, divided by new customers.',
+ tools:'Marketing and sales software, spread across the new customers you won in the same period.',
+ people:'Salaries and agency fees for the people who find and close customers, divided by new customers.',
+ crm:'What you spend to get each repeat order: emails, texts and retargeting ads.',
+ loyal:'Points, perks, save offers and incentives, as a share of repeat revenue.',
+ aiTokAcq:'Tokens your AI tools use to win one customer: ad copy variants, landing page tests, research and personalized outreach. 1,000 tokens is roughly 750 words.',
+ aiMedia:'Spend on generated images, video and voice for ads and content, divided by new customers.',
+ aiSeats:'Flat AI subscriptions, such as writing, design or prospecting tools, spread across the new customers you win.',
+ aiTokOrd:'Tokens used on every order after the sale: personalized emails, product recommendations and support chat.',
+ aiPrice:'What you pay per million tokens, blended across the models you use and across input and output. Small models cost cents; the largest cost several dollars.'};
+const TIPS_B={'b2b-sub':{price:'What one account pays per year for the contract, before discounts.',disc1:'The discount given to close the first year of the contract.',disc:'The discount given at each renewal.',
+ ret:'The share of accounts that renew each year. At 78%, about one in five leaves at renewal.',ful:'One-time cost to set up and train a new account. It is paid in the first year only.',
+ cogs:'Hosting, infrastructure and support costs, as a share of the money you collect.',crm:'Account manager or customer success time spent on each account per renewal year.',aiTokOrd:'Tokens spent serving each account per year: AI support, health scoring and renewal outreach.'},
+ 'b2b-repeat':{price:'The value of a typical purchase order, before discounts.',ful:'Freight, packing and handling for each order.',crm:'Account manager time spent to land each reorder.',loyal:'Volume rebates and incentives paid back to the buyer on reorders.'}};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let mode=store.get('ue3-mode');if(!MODES[mode])mode='dtc';
+const pat=Object.assign({dtc:'repeat',b2c:'repeat',b2b:'sub'},store.get('ue3-pat')||{});
+let open=new Set(store.get('ue3-open')||['rev','keepin']),active='cm';
+const vals={};for(const c in CONF){vals[c]={};const sv=store.get('ue3-'+c)||{};for(const k in CONF[c].k)vals[c][k]=typeof sv[k]==='number'?sv[k]:CONF[c].k[k][5]}
+const once=()=>pat[mode]==='none',key=()=>mode+'-'+(pat[mode]==='sub'?'sub':'repeat'),C=()=>CONF[key()];
+const $=id=>document.getElementById(id);
+const lab=k=>(C().lbl||{})[k]||DEF[k][0];
+const tip=k=>(TIPS_B[key()]||{})[k]||TIPS[k];
+const money=n=>{const a=Math.abs(n),s=n<0?'−$':'$';if(a>=10000)return s+(a/1000).toFixed(a>=100000?0:1)+'k';const d=a<100?2:0;return s+a.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})};
+const fmtIn=(d,v)=>d[1]==='%'?v.toFixed(d[4]<1?1:0)+'%':d[1]==='f'?(v%1?v.toFixed(1):v)+' a year':d[1]==='tk'?(v>=1000?(v/1000).toFixed(v%1000?1:0)+'M':v+'k')+' tokens':d[1]==='pm'?'$'+v.toFixed(2)+' per 1M':'$'+(v>=1000?v.toLocaleString('en-US'):v.toFixed(d[4]<1?2:0));
+const span=m=>m>=24?(m/12).toFixed(1)+' yrs':Math.round(m)+' mo';
+const pct=n=>(n*100).toFixed(0)+'%';
+
+function calc(v,c,one){
+ const r=one?0:Math.min(v.ret,97)/100,L=1/(1-r),R=L-1,n1=v.price*(1-v.disc1/100),nR=v.price*(1-v.disc/100);
+ const aiPer=v.aiTokOrd/1000*v.aiPrice;
+ const ord=(n,f)=>({cogs:n*v.cogs/100,ful:c.fulFirst&&!f?0:v.ful,proc:n*v.procP/100+v.procF,chan:n*v.chan/100,rfd:n*v.rfd/100,comm:n*v.comm/100});
+ const o1=ord(n1,1),oR=ord(nR,0),t={};let s1=0,sR=0;for(const k in o1){t[k]=o1[k]+R*oR[k];s1+=o1[k];sR+=oR[k]}
+ const net=n1+R*nR,cm=net-s1-R*sR,crm=one?0:R*v.crm,loyal=one?0:R*nR*v.loyal/100,cac=v.media+v.creative+v.tools+v.people;
+ const aiAcq=v.aiTokAcq/1000*v.aiPrice+v.aiMedia+v.aiSeats,aiOrd=aiPer*L,cacAll=cac+aiAcq;
+ const cm1=n1-s1-aiPer,cmR=nR-sR-v.crm-nR*v.loyal/100-aiPer,ltv=cm-crm-loyal-aiOrd;
+ const pbOrders=cm1>=cacAll?(cm1>0?cacAll/cm1:Infinity):(!one&&cmR>0)?1+(cacAll-cm1)/cmR:Infinity;
+ return{L,R,n1,cm1,first:v.price,repeat:v.price*R,gross:v.price*L,disc:v.price-n1+R*(v.price-nR),net,...t,cm,media:v.media,creative:v.creative,tools:v.tools,people:v.people,cac,cacAll,crm,loyal,aiAcq,aiOrd,ltv,profit:ltv-cacAll,
+  pbMonths:pbOrders*12/v.freq,lifeMonths:L*12/v.freq,repShare:net>0?R*nR/net:0}}
+
+function renderPills(){
+ $('modes').innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" data-m="${k}" aria-pressed="${k===mode}">${m[0]}<small>${m[1]}</small></button>`).join('');
+ $('pats').innerHTML=Object.entries(PATS).map(([k,n])=>`<button type="button" data-p="${k}" aria-pressed="${k===pat[mode]}">${n}</button>`).join('');
+ $('pathint').textContent=once()?'Both off: each customer buys once.':'Click again to turn off.'}
+function renderForm(){const c=C(),v=vals[key()];
+ $('form').innerHTML=GROUPS.filter(g=>!(g[4]&&once())).map(([g,name,keys,col])=>`<details data-g="${g}"${open.has(g)?' open':''}><summary><i style="background:${col}"></i><span>${name}</span><b id="sum-${g}"></b></summary><div class="body">${g==='keepin'?'<p class="hint" id="life"></p>':''}${g==='ai'?'<p class="hint">Token prices vary by model. Set the blended rate you actually pay.</p>':''}${keys.map(k=>{const d=c.k[k];if(d[2]===d[3])return'';return`<div class="s"><span class="lab"><label for="i-${k}">${d[0]}${d[1]==='$'&&g==='win'?' per new '+c.who:''}</label><button type="button" class="tip" aria-label="What this means" aria-describedby="t-${k}">?</button></span><output id="o-${k}" for="i-${k}">${fmtIn(d,v[k])}</output><div class="tipbox" role="tooltip" id="t-${k}">${tip(k)}</div><input type="range" id="i-${k}" data-k="${k}" min="${d[2]}" max="${d[3]}" step="${d[4]}" value="${v[k]}"></div>`}).join('')}</div></details>`).join('');
+ $('scope').textContent=c.scope+(once()?' Each customer buys once.':pat[mode]==='repeat'?' Customers come back when they choose to.':'');
+ document.querySelectorAll('#form input[type=range]').forEach(fill);syncToggle()}
+function fill(i){i.style.setProperty('--p',((i.value-i.min)/(i.max-i.min)*100)+'%')}
+function syncToggle(){const all=[...document.querySelectorAll('#form details')].every(d=>d.open);$('toggleAll').textContent=all?'Collapse all':'Expand all'}
+
+const ALLROWS=[['first','u'],['repeat','u',1],['gross','s'],['disc','c'],['net','s'],['cogs','c'],['ful','c'],['proc','c'],['chan','c'],['rfd','c'],['comm','c'],['cm','s'],['media','a'],['creative','a'],['tools','a'],['people','a'],['crm','k',1],['loyal','k',1],['aiAcq','i'],['aiOrd','i'],['profit','p']];
+const GAP=new Set(['disc','cogs','media','crm','aiAcq','profit']),COL={u:'var(--rev)',c:'var(--c1)',a:'var(--c2)',k:'var(--c3)',i:'var(--ai)'};
+let built='',ROWS=[];
+function draw(){
+ const c=C(),v=vals[key()],one=once(),r=calc(v,c,one),wf=$('wf');
+ const lo=Math.min(0,r.profit,r.cm-r.cacAll),hi=r.gross||1,x=n=>(n-lo)/(hi-lo)*100;
+ const bk=key()+one,fresh=built!==bk;
+ if(fresh){built=bk;ROWS=ALLROWS.filter(rw=>!(rw[2]&&one));wf.innerHTML=ROWS.map(([k,t])=>`<div class="row${t==='s'||t==='p'?' t':''}${GAP.has(k)?' gap':''}${k===active?' on':''}" tabindex="0" data-r="${k}"><div class="l">${lab(k)}</div><div class="track"><div class="zero"></div><div class="bar" style="left:${x(0)}%;width:0"></div></div><div class="v"></div></div>`).join('')}
+ const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;let cum=0;
+ ROWS.forEach(([k,t],i)=>{const val=r[k];let a,b,col;
+  if(t==='u'){a=cum;b=cum+val;cum=b;col=k==='first'?'var(--rev)':'var(--rep)'}
+  else if(t==='s'||t==='p'){a=Math.min(0,val);b=Math.max(0,val);cum=val;col=t==='s'?'var(--sub)':(val<0?'var(--neg)':'var(--pos)')}
+  else{b=cum;a=cum-val;cum=a;if(a>b)[a,b]=[b,a];col=COL[t]}
+  const el=wf.children[i],bar=el.querySelector('.bar'),z=el.querySelector('.zero'),ve=el.querySelector('.v');
+  ve.className='v'+(t==='p'?(val<0?' neg':' pos'):'');ve.textContent='caki'.includes(t)?'−'+money(val).replace('−',''):(t==='u'?'+':'')+money(val);
+  z.style.display=lo<0?'block':'none';z.style.left=x(0)+'%';bar.style.background=col;
+  const set=()=>{bar.style.left=x(a)+'%';bar.style.width=Math.max(x(b)-x(a),.25)+'%'};
+  if(fresh&&!rm){bar.style.transitionDelay=(i*.045)+'s';requestAnimationFrame(()=>requestAnimationFrame(set));setTimeout(()=>bar.style.transitionDelay='0s',1600)}else set()});
+ const S={rev:money(r.net)+' net',keepin:r.L.toFixed(1)+' '+c.u,cogs:money(r.cogs),sell:money(r.ful+r.proc+r.chan+r.rfd+r.comm),win:money(r.cac),keep:money(r.crm+r.loyal),ai:money(r.aiAcq+r.aiOrd)};
+ for(const g in S){const e=$('sum-'+g);if(e)e.textContent=(g==='rev'||g==='keepin'?'':'−')+S[g]}
+ const life=$('life');if(life)life.textContent=`An average ${c.who} pays for ${r.L.toFixed(1)} ${c.u} and stays about ${span(r.lifeMonths)}.`;
+ const ratio=r.cacAll>0?r.ltv/r.cacAll:Infinity,pos=r.profit>=0;
+ $('kCM').textContent=(r.net>0?r.cm/r.net*100:0).toFixed(0)+'%';$('kCMl').textContent=`Contribution margin: ${money(r.cm)} of ${money(r.net)} net revenue`;
+ $('kLC').textContent=ratio===Infinity?'No CAC':ratio.toFixed(1)+':1';$('kLC').className=pos?'pos':'neg';
+ $('kPB').textContent=isFinite(r.pbMonths)?(r.pbMonths<=12/v.freq&&r.cm1>=r.cacAll?'1st order':span(r.pbMonths)):'Never';
+ $('kPBl').textContent=one?'To earn back total CAC on a single purchase':`To earn back total CAC. The average ${c.who} stays ${span(r.lifeMonths)}${isFinite(r.pbMonths)&&r.pbMonths>r.lifeMonths?', so most leave first':''}`;
+ const aiT=r.aiAcq+r.aiOrd;$('kAI').textContent=money(aiT);$('kAIl').textContent=`AI cost per ${c.who}: ${pct(r.cacAll>0?r.aiAcq/r.cacAll:0)} of total CAC, plus ${money(r.aiOrd)} after the sale`;
+ {const h=$('finding'),m=document.createElement('span');m.className=pos?'pos':'neg';m.textContent=money(Math.abs(r.profit));h.textContent='';h.append(`Each ${MODES[mode][0]} ${c.who} ${pos?'earns':'loses'} `,m,pos?` after paying to win${one?'':' and keep'} them`:` once acquisition${one?'':', retention'} and AI are paid for`)}
+ let best=null;
+ for(const k in v){if(k==='freq'||v[k]===0||(one&&['ret','crm','loyal'].includes(k)))continue;const tv={...v};
+  if(k==='ret')tv.ret=Math.min(97,100-(100-v.ret)*.9);else tv[k]=k==='price'?v.price*1.1:v[k]*.9;
+  const d=calc(tv,c,one).profit-r.profit;if(!best||d>best[1])best=[k,d]}
+ const nm=k=>c.k[k][0].toLowerCase();
+ $('lever').textContent=best&&best[1]>0?`Biggest lever right now: ${best[0]==='ret'?`losing 10% fewer ${c.who}s each cycle`:best[0]==='price'?`raising ${nm('price')} 10%`:`cutting ${nm(best[0])} 10%`} adds ${money(best[1])} per ${c.who}.`:'';
+ recommend(c,v,r,ratio,one);
+ explain(active,r)}
+
+function recommend(c,v,r,ratio,one){
+ const out=[],add=(w,t,b)=>out.push([w,t,b]),M=mode,P=pat[mode],who=c.who;
+ if(one&&r.profit<0)add(100,'One purchase doesn’t pay for the customer',`The first order leaves ${money(r.cm1)} against ${money(r.cacAll)} to acquire. Turn on repeat purchase or subscription to model a second order, or bring total CAC under ${money(Math.max(r.cm1,0))}.`);
+ if(!one||r.profit>=0){
+  if(ratio<1)add(95,`Every ${who} loses money`,`Lifetime value is ${money(r.ltv)} against ${money(r.cacAll)} to acquire. Growth makes this worse. Fix margin or retention before adding spend.`);
+  else if(ratio<3)add(70,'Profitable, but thin',`At ${ratio.toFixed(1)}:1 there is little room for error. Reaching 3:1 needs lifetime value of ${money(r.cacAll*3)} or total CAC of ${money(r.ltv/3)}.`);
+  else if(ratio>5)add(40,'You may be underspending on growth',`At ${ratio.toFixed(1)}:1 you could likely spend more to acquire ${who}s and still clear 3:1. Test raising budgets in your best channel.`)}
+ if(!one&&isFinite(r.pbMonths)&&r.pbMonths>r.lifeMonths)add(85,`Most ${who}s leave before paying back`,`Payback takes ${span(r.pbMonths)} but the average ${who} stays ${span(r.lifeMonths)}. Raise first-order margin with a smaller welcome offer or a bundle.`);
+ else if(M==='b2b'&&r.pbMonths>24&&isFinite(r.pbMonths))add(60,'Payback over two years ties up cash',`Most SaaS operators aim for 12 to 18 months. Shorter sales cycles and annual prepay bring it in.`);
+ else if(M!=='b2b'&&r.pbMonths>12&&isFinite(r.pbMonths))add(55,'Slow payback for a consumer brand',`${span(r.pbMonths)} is long for ${M.toUpperCase()}; under 6 months is a common target. Lift the first order or cut CAC.`);
+ const VAR=[['cogs','cogs'],['ful','ful'],['chan','chan'],['rfd','rfd'],['comm','comm']].map(([k])=>[k,r.net>0?r[k]/r.net:0]).sort((a,b)=>b[1]-a[1])[0];
+ const FIX={cogs:'Renegotiate supplier terms, raise price or move buyers to higher-margin items.',
+  ful:M==='dtc'?'Set a free-shipping threshold above your average order and push bundles to lift order size.':M==='b2c'?'Check size tier and storage fees. Lighter, smaller packaging can drop you a fee tier.':'Standardize the process so it takes fewer hours per account.',
+  chan:M==='b2c'?'Compare marketplace fees with selling direct and move repeat buyers to a channel you own.':'Audit the apps and partners taking a cut of every sale.',
+  rfd:'Better product pages, sizing and expectation-setting cut returns and refunds.',comm:'Pay commission on margin rather than revenue, or lower it on repeat orders and renewals.'};
+ const TH=VAR[0]==='cogs'?(M==='b2b'&&P==='sub'?.25:.45):.12;if(VAR[1]>TH)add(50+VAR[1]*50,`${lab(VAR[0])} takes ${pct(VAR[1])} of net revenue`,FIX[VAR[0]]);
+ if(v.disc1>=25)add(45,`The first-order discount is ${v.disc1}%`,'A deep welcome offer attracts deal-seekers who rarely come back. Test a smaller offer or a gift with purchase.');
+ const CAC=[['media',r.media],['creative',r.creative],['tools',r.tools],['people',r.people]].sort((a,b)=>b[1]-a[1])[0],cs=r.cac>0?CAC[1]/r.cac:0;
+ const CF={media:'Spread spend across more creative tests and build channels you own, such as email capture and referrals, to lower blended cost.',people:'A tighter ideal-customer profile and AI-assisted research and outreach cut hours per closed deal.',creative:'Reuse winning concepts across formats instead of producing each asset from scratch.',tools:'Consolidate overlapping tools; this line rarely needs to exceed 10% of CAC.'};
+ if(cs>.55)add(45,`${c.k[CAC[0]][0]} is ${pct(cs)} of CAC`,CF[CAC[0]]);
+ if(P==='sub'&&v.freq>=12&&v.ret<88)add(65,`Monthly churn is ${100-v.ret}%`,'Most subscription churn happens in the first 90 days. Better onboarding plus skip and pause options usually beat win-back offers.');
+ if(P==='sub'&&M==='b2b'&&v.ret<85)add(65,`${100-v.ret}% of accounts leave each year`,'Strong B2B products renew 85 to 90% or more. Start customer success in the first 60 days, before the renewal conversation.');
+ if(P==='repeat'&&v.ret<45)add(60,`Under half of ${who}s buy again`,'The second purchase matters most. A timed post-purchase flow and a reason to come back, such as refills or new drops, move this.');
+ if(one&&r.profit>=0){const t=calc({...v,ret:30},CONF[mode+'-repeat'],false);add(35,'Profitable on one purchase',`If 30% of ${who}s bought again, profit would rise by about ${money(t.profit-r.profit)} per ${who}. Turn on repeat purchase to test it.`)}
+ const aiShare=r.cacAll>0?r.aiAcq/r.cacAll:0;
+ if(aiShare>.15)add(50,`AI is ${pct(aiShare)} of what it costs to win a ${who}`,'Check tokens per asset. Cache repeated prompts, draft with a smaller model and save the large model for final versions.');
+ else if(r.aiAcq+r.aiOrd>0)add(20,`AI is ${pct(aiShare)} of acquisition cost`,`At ${money(r.aiAcq)} per new ${who}, using AI for more ad variants and personalized outreach is cheap next to what you spend on ${c.k[CAC[0]][0]}.`);
+ out.sort((a,b)=>b[0]-a[0]);
+ $('recs').innerHTML=out.slice(0,5).map(()=>'<li><b></b><span></span></li>').join('');
+ [...$('recs').children].forEach((li,i)=>{li.querySelector('b').textContent=out[i][1];li.querySelector('span').textContent=out[i][2]})}
+
+function explain(k,r){r=r||calc(vals[key()],C(),once());if(!ROWS.some(x=>x[0]===k))k='cm';active=k;const d=DEF[k],val=r[k];
+ for(const el of $('wf').children)el.classList.toggle('on',el.dataset.r===k);
+ const share=r.net>0&&!['first','repeat','gross','disc'].includes(k)?` That is ${(Math.abs(val)/r.net*100).toFixed(0)}% of net revenue.`:'';
+ const w=$('why');w.querySelector('h3').textContent=`${lab(k)}: ${money(val)}`;w.querySelector('p').textContent=d[1]+share;w.querySelector('.f').textContent='How it is worked out: '+d[2]}
+
+function rerender(){renderPills();renderForm();draw()}
+rerender();
+$('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mode=b.dataset.m;store.set('ue3-mode',mode);rerender()});
+$('pats').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pat[mode]=pat[mode]===b.dataset.p?'none':b.dataset.p;store.set('ue3-pat',pat);rerender()});
+$('form').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;const v=vals[key()];v[k]=parseFloat(e.target.value);$('o-'+k).textContent=fmtIn(C().k[k],v[k]);fill(e.target);store.set('ue3-'+key(),v);draw()});
+$('form').addEventListener('toggle',e=>{const g=e.target.dataset.g;if(!g)return;e.target.open?open.add(g):open.delete(g);store.set('ue3-open',[...open]);syncToggle()},true);
+$('toggleAll').addEventListener('click',()=>{const ds=[...document.querySelectorAll('#form details')],to=!ds.every(d=>d.open);ds.forEach(d=>d.open=to)});
+$('wf').addEventListener('mouseover',e=>{const r=e.target.closest('.row');if(r&&r.dataset.r!==active)explain(r.dataset.r)});
+$('wf').addEventListener('focusin',e=>{const r=e.target.closest('.row');if(r)explain(r.dataset.r)});
+$('wf').addEventListener('click',e=>{const r=e.target.closest('.row');if(r)explain(r.dataset.r)});
+$('reset').addEventListener('click',()=>{const c=C();for(const k in c.k)vals[key()][k]=c.k[k][5];store.set('ue3-'+key(),vals[key()]);renderForm();draw()});
+}
+</script>
+</body>
+</html>
